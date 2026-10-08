@@ -7,6 +7,11 @@
 <meta name="description" content="Real-time endpoint monitoring and public status page for 10 services across HTTP, TCP, and DNS.">
 <meta property="og:title" content="Beacon - Endpoint Monitoring">
 <meta property="og:description" content="Real-time endpoint monitoring and public status page for 10 services across HTTP, TCP, and DNS.">
+<meta property="og:image" content="https://nordstack9.github.io/uptime-monitor-demo/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Beacon - Endpoint Monitoring">
+<meta name="twitter:description" content="Real-time endpoint monitoring and public status page for 10 services across HTTP, TCP, and DNS.">
+<meta name="twitter:image" content="https://nordstack9.github.io/uptime-monitor-demo/og.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -655,7 +660,7 @@ footer {
       <h1>beacon</h1>
     </div>
     <div class="header-right">
-      <span class="meta">Last check: Sep 28, 2026, 14:32 UTC</span>
+      <span class="meta" id="lastCheck"></span>
       <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">
         <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
@@ -833,10 +838,18 @@ footer {
 
   const DATA = generateData();
 
+  function fmtShortDate(d) {
+    var m = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return m;
+  }
+  var today = new Date();
+  var day1 = new Date(today); day1.setDate(day1.getDate() - 0);
+  var day2 = new Date(today); day2.setDate(day2.getDate() - 1);
+  var day3 = new Date(today); day3.setDate(day3.getDate() - 3);
   const INCIDENTS = [
-    { time: "Sep 28, 14:18", severity: "resolved", title: "Search Index latency spike", detail: "p95 exceeded 400 ms for 12 minutes. Triggered auto-scaling. Resolved after new nodes joined cluster.", type: "warning" },
-    { time: "Sep 27, 03:42", severity: "resolved", title: "DNS propagation delay", detail: "TTL expiry caused 45 s resolution delay in eu-west-1. Self-recovered.", type: "resolved" },
-    { time: "Sep 25, 11:05", severity: "resolved", title: "Redis failover", detail: "Primary node OOM. Sentinel promoted replica in 2.1 s. Zero dropped connections.", type: "resolved" },
+    { time: fmtShortDate(day1) + ", 14:18", severity: "resolved", title: "Search Index latency spike", detail: "p95 exceeded 400 ms for 12 minutes. Triggered auto-scaling. Resolved after new nodes joined cluster.", type: "warning" },
+    { time: fmtShortDate(day2) + ", 03:42", severity: "resolved", title: "DNS propagation delay", detail: "TTL expiry caused 45 s resolution delay in eu-west-1. Self-recovered.", type: "resolved" },
+    { time: fmtShortDate(day3) + ", 11:05", severity: "resolved", title: "Redis failover", detail: "Primary node OOM. Sentinel promoted replica in 2.1 s. Zero dropped connections.", type: "resolved" },
   ];
 
   // STATUS TAB
@@ -1000,6 +1013,49 @@ footer {
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 2200);
   });
+
+  // Dynamic last-check timestamp
+  (function setLastCheck() {
+    var now = new Date();
+    var opts = { month: 'short', day: 'numeric', year: 'numeric' };
+    var d = now.toLocaleDateString('en-US', opts);
+    var h = String(now.getUTCHours()).padStart(2, '0');
+    var m = String(now.getUTCMinutes()).padStart(2, '0');
+    document.getElementById('lastCheck').textContent = 'Last check: ' + d + ', ' + h + ':' + m + ' UTC';
+  })();
+
+  // Add maintenance window button
+  var addWindowBtn = document.querySelector('.btn-outline');
+  if (addWindowBtn) {
+    var windowCount = 0;
+    addWindowBtn.addEventListener('click', function() {
+      windowCount++;
+      var container = addWindowBtn.closest('.settings-section');
+      var empty = container.querySelector('.maintenance-empty');
+      if (empty) empty.remove();
+      var list = container.querySelector('.mw-list');
+      if (!list) {
+        list = document.createElement('div');
+        list.className = 'mw-list';
+        container.insertBefore(list, addWindowBtn.parentElement);
+      }
+      var now = new Date();
+      var start = new Date(now.getTime() + 86400000 * windowCount);
+      var end = new Date(start.getTime() + 7200000);
+      var row = document.createElement('div');
+      row.className = 'toggle-row';
+      row.innerHTML = '<span>Window ' + windowCount + ': ' +
+        start.toLocaleDateString('en-US', {month:'short',day:'numeric'}) + ' ' +
+        String(start.getHours()).padStart(2,'0') + ':00 - ' +
+        String(end.getHours()).padStart(2,'0') + ':00</span>' +
+        '<button class="btn-outline" style="padding:4px 10px;font-size:11px" onclick="this.parentElement.remove()">Remove</button>';
+      list.appendChild(row);
+      var toast = document.getElementById('toast');
+      toast.textContent = 'Maintenance window added';
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); toast.textContent = 'Settings saved'; }, 2200);
+    });
+  }
 
   // Init
   renderStatus();
