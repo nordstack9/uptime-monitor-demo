@@ -25,7 +25,7 @@
   --border-light: #f1f5f9;
   --text: #0f172a;
   --text-2: #475569;
-  --text-3: #94a3b8;
+  --text-3: #6b7a8e;
   --green: #22c55e;
   --green-bg: #f0fdf4;
   --green-border: #bbf7d0;
@@ -51,7 +51,7 @@
     --border-light: #1e293b;
     --text: #f1f5f9;
     --text-2: #94a3b8;
-    --text-3: #64748b;
+    --text-3: #8493a7;
     --green-bg: rgba(34,197,94,.12);
     --green-border: rgba(34,197,94,.25);
     --amber-bg: rgba(245,158,11,.1);
@@ -70,7 +70,7 @@
   --border-light: #1e293b;
   --text: #f1f5f9;
   --text-2: #94a3b8;
-  --text-3: #64748b;
+  --text-3: #8493a7;
   --green-bg: rgba(34,197,94,.12);
   --green-border: rgba(34,197,94,.25);
   --amber-bg: rgba(245,158,11,.1);
@@ -357,7 +357,7 @@ header {
 
 /* 90-day bars */
 .ninety-section { margin-top: 28px; margin-bottom: 20px; }
-.ninety-section h3 {
+.ninety-section h2 {
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 14px;
@@ -505,7 +505,7 @@ header {
   padding: 20px;
   margin-bottom: 16px;
 }
-.settings-section h3 {
+.settings-section h2 {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 14px;
@@ -674,6 +674,7 @@ footer {
     <button class="tab-btn" data-tab="settings">Settings</button>
   </nav>
 
+  <main>
   <!-- STATUS TAB -->
   <div class="tab-panel active" id="tab-status"></div>
 
@@ -683,7 +684,7 @@ footer {
   <!-- SETTINGS TAB -->
   <div class="tab-panel" id="tab-settings">
     <div class="settings-section">
-      <h3>Check interval</h3>
+      <h2>Check interval</h2>
       <div class="field">
         <div class="field-label">How often to check each endpoint</div>
         <select>
@@ -696,7 +697,7 @@ footer {
     </div>
 
     <div class="settings-section">
-      <h3>Alert channels</h3>
+      <h2>Alert channels</h2>
       <div class="toggle-row"><span>Email</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
       <div class="toggle-row"><span>Slack</span><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
       <div class="toggle-row"><span>PagerDuty</span><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
@@ -704,7 +705,7 @@ footer {
     </div>
 
     <div class="settings-section">
-      <h3>Escalation policy</h3>
+      <h2>Escalation policy</h2>
       <div class="field">
         <div class="field-label">Notify after consecutive failures</div>
         <input type="number" value="3" min="1" max="20">
@@ -712,7 +713,7 @@ footer {
     </div>
 
     <div class="settings-section">
-      <h3>Maintenance windows</h3>
+      <h2>Maintenance windows</h2>
       <div class="maintenance-empty">No windows configured</div>
       <div style="margin-top:12px"><button class="btn-outline">Add window</button></div>
     </div>
@@ -722,6 +723,7 @@ footer {
     </div>
   </div>
 
+  </main>
   <footer>
     <span>beacon v2.4.0, checks every 5 min, exponential backoff</span>
     <span>10 endpoints, HTTP / TCP / DNS</span>
@@ -917,7 +919,7 @@ footer {
     }
 
     // 90-day bars
-    html += '<div class="ninety-section"><h3>90-day uptime</h3>';
+    html += '<div class="ninety-section"><h2>90-day uptime</h2>';
     for (const ep of DATA) {
       let barsHtml = '';
       for (const d of ep.days90) {
